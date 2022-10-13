@@ -41,7 +41,7 @@ public class HashTable<K, V> {
     public boolean insert(K key, V value) {
         // Insert x as active
         
-        int currentPos = findPos(key);
+        int currentPos = findInsert(key);
         if(isActive(currentPos))
             return false;
 
@@ -88,6 +88,21 @@ public class HashTable<K, V> {
         for(HashEntry<K, V> entry : oldArray)
             if(entry != null && entry.isActive)
                 insert(entry.key, entry.value);
+    }
+
+    private int findInsert(K key) {
+        int offset = 1;
+        int currentPos = myhash(key);
+
+        while(array[currentPos] != null && !array[currentPos].key.equals(key)) {
+            if (!array[currentPos].isActive) break;
+            currentPos += offset;  // Compute ith probe
+            offset += 2;
+            if(currentPos >= array.length)
+                currentPos -= array.length;
+        }
+
+        return currentPos;
     }
 
     /**
@@ -305,7 +320,7 @@ public class HashTable<K, V> {
         System.out.println( "Elapsed time: " + (endTime - startTime) );
         System.out.println( "H size is: " + H.size());
         System.out.println( "Array size is: " + H.capacity());
-        System.out.println(H.find(1000));
+        H.insert(1, "HELLO");
     }
 
 }
