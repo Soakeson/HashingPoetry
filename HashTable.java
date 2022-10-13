@@ -15,24 +15,21 @@
  * Note that all "matching" is based on the equals method.
  * @author Mark Allen Weiss
  */
-public class HashTable<E>
-{
+public class HashTable<K, V> {
     /**
      * Construct the hash table.
      */
-    public HashTable( )
-    {
-        this( DEFAULT_TABLE_SIZE );
+    public HashTable() {
+        this( DEFAULT_TABLE_SIZE);
     }
 
     /**
      * Construct the hash table.
      * @param size the approximate initial size.
      */
-    public HashTable(int size )
-    {
-        allocateArray( size );
-        doClear( );
+    public HashTable(int size) {
+        allocateArray(size);
+        doClear();
     }
 
     /**
@@ -41,19 +38,19 @@ public class HashTable<E>
      * Implementation issue: This routine doesn't allow you to use a lazily deleted location.  Do you see why?
      * @param x the item to insert.
      */
-    public boolean insert( E x )
-    {
+    public boolean insert(K key, V value) {
         // Insert x as active
-        int currentPos = findPos( x );
-        if( isActive( currentPos ) )
+        
+        int currentPos = findPos(key);
+        if(isActive(currentPos))
             return false;
 
-        array[ currentPos ] = new HashEntry<>( x, true );
+        array[currentPos] = new HashEntry<K, V>(key, value, true);
         currentActiveEntries++;
 
         // Rehash; see Section 5.5
-        if( ++occupiedCt > array.length / 2 )
-            rehash( );
+        if(++occupiedCt > array.length / 2)
+            rehash();
 
         return true;
     }
@@ -68,7 +65,7 @@ public class HashTable<E>
         int ct=0;
         for (int i=0; i < array.length && ct < limit; i++){
             if (array[i]!=null && array[i].isActive) {
-                sb.append( i + ": " + array[i].element + "\n" );
+                sb.append(i + ": " + array[i].value + "\n");
                 ct++;
             }
         }
@@ -78,19 +75,19 @@ public class HashTable<E>
     /**
      * Expand the hash table.
      */
-    private void rehash( )
+    private void rehash()
     {
-        HashEntry<E> [ ] oldArray = array;
+        HashEntry<K, V> [] oldArray = array;
 
         // Create a new double-sized, empty table
-        allocateArray( 2 * oldArray.length );
+        allocateArray(2 * oldArray.length);
         occupiedCt = 0;
         currentActiveEntries = 0;
 
         // Copy table over
-        for( HashEntry<E> entry : oldArray )
-            if( entry != null && entry.isActive )
-                insert( entry.element );
+        for(HashEntry<K, V> entry : oldArray)
+            if(entry != null && entry.isActive)
+                insert(entry.key, entry.value);
     }
 
     /**
@@ -99,17 +96,14 @@ public class HashTable<E>
      * @return the position where the search terminates.
      * Never returns an inactive location.
      */
-    private int findPos( E x )
-    {
+    private int findPos(K key) {
         int offset = 1;
-        int currentPos = myhash( x );
+        int currentPos = myhash(key);
 
-        while( array[ currentPos ] != null &&
-                !array[ currentPos ].element.equals( x ) )
-        {
+        while(array[currentPos] != null && !array[currentPos].key.equals(key)) {
             currentPos += offset;  // Compute ith probe
             offset += 2;
-            if( currentPos >= array.length )
+            if(currentPos >= array.length)
                 currentPos -= array.length;
         }
 
@@ -121,16 +115,13 @@ public class HashTable<E>
      * @param x the item to remove.
      * @return true if item removed
      */
-    public boolean remove( E x )
-    {
-        int currentPos = findPos( x );
-        if( isActive( currentPos ) )
-        {
-            array[ currentPos ].isActive = false;
+    public boolean remove(K key) {
+        int currentPos = findPos(key);
+        if( isActive(currentPos)) {
+            array[currentPos].isActive = false;
             currentActiveEntries--;
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -138,8 +129,7 @@ public class HashTable<E>
      * Get current size.
      * @return the size.
      */
-    public int size( )
-    {
+    public int size() {
         return currentActiveEntries;
     }
 
@@ -147,8 +137,7 @@ public class HashTable<E>
      * Get length of internal table.
      * @return the maximum size of HashTable.
      */
-    public int capacity( )
-    {
+    public int capacity() {
         return array.length;
     }
 
@@ -157,10 +146,9 @@ public class HashTable<E>
      * @param x the item to search for.
      * @return true if item is found
      */
-    public boolean contains( E x )
-    {
-        int currentPos = findPos( x );
-        return isActive( currentPos );
+    public boolean contains(K key) {
+        int currentPos = findPos(key);
+        return isActive(currentPos);
     }
 
     /**
@@ -168,14 +156,13 @@ public class HashTable<E>
      * @param x the item to search for.
      * @return the matching item.
      */
-    public E find( E x )
-    {
-        int currentPos = findPos( x );
-        if (!isActive( currentPos )) {
+    public V find(K key) {
+        int currentPos = findPos(key);
+        if (!isActive(currentPos)) {
             return null;
         }
         else {
-            return array[currentPos].element;
+            return array[currentPos].value;
         }
     }
 
@@ -184,27 +171,24 @@ public class HashTable<E>
      * @param currentPos the result of a call to findPos.
      * @return true if currentPos is active.
      */
-    private boolean isActive( int currentPos )
-    {
-        return array[ currentPos ] != null && array[ currentPos ].isActive;
+    private boolean isActive(int currentPos) {
+        return array[currentPos] != null && array[currentPos].isActive;
     }
 
     /**
      * Make the hash table logically empty.
      */
-    public void makeEmpty( )
-    {
-        doClear( );
+    public void makeEmpty() {
+        doClear();
     }
 
     /**
      * remove all entries in Hash Table
      */
-    private void doClear( )
-    {
+    private void doClear() {
         occupiedCt = 0;
-        for( int i = 0; i < array.length; i++ )
-            array[ i ] = null;
+        for(int i = 0; i < array.length; i++)
+            array[i] = null;
     }
 
     /**
@@ -213,37 +197,35 @@ public class HashTable<E>
      * @return the hashCode for the element
      * 
      */
-    private int myhash( E x )
-    {
-        int hashVal = x.hashCode( );
+    private int myhash(K key) {
+        int hashVal = key.hashCode();
 
         hashVal %= array.length;
-        if( hashVal < 0 )
+        if(hashVal < 0)
             hashVal += array.length;
 
         return hashVal;
     }
 
-    private static class HashEntry<E>
-    {
-        public E  element;   // the element
+    private static class HashEntry<K, V> {
+        public K key;
+        public V value;   // the element
         public boolean isActive;  // false if marked deleted
 
-        public HashEntry( E e )
-        {
-            this( e, true );
+        public HashEntry(K key, V value) {
+            this(key, value, true);
         }
 
-        public HashEntry( E e, boolean i )
-        {
-            element  = e;
+        public HashEntry(K key, V value, boolean i) {
+            this.key = key;
+            this.value = value;
             isActive = i;
         }
     }
 
     private static final int DEFAULT_TABLE_SIZE = 101;
 
-    private HashEntry<E> [ ] array; // The array of elements
+    private HashEntry<K, V> [ ] array; // The array of elements
     private int occupiedCt;         // The number of occupied cells: active or deleted
     private int currentActiveEntries;                  // Current size
 
@@ -251,9 +233,8 @@ public class HashTable<E>
      * Internal method to allocate array.
      * @param arraySize the size of the array.
      */
-    private void allocateArray( int arraySize )
-    {
-        array = new HashEntry[ nextPrime( arraySize ) ];
+    private void allocateArray(int arraySize) {
+        array = new HashEntry[nextPrime(arraySize)];
     }
 
     /**
@@ -262,12 +243,11 @@ public class HashTable<E>
      * @return a prime number larger than or equal to n.
      *
      */
-    private static int nextPrime( int n )
-    {
-        if( n % 2 == 0 )
+    private static int nextPrime(int n) {
+        if(n % 2 == 0)
             n++;
 
-        for( ; !isPrime( n ); n += 2 )
+        for(; !isPrime(n); n += 2)
             ;
 
         return n;
@@ -279,8 +259,7 @@ public class HashTable<E>
      * @param n the number to test.
      * @return the result of the test.
      */
-    private static boolean isPrime( int n )
-    {
+    private static boolean isPrime( int n ) {
         if( n == 2 || n == 3 )
             return true;
 
@@ -296,39 +275,37 @@ public class HashTable<E>
 
 
     // Simple main
-    public static void main( String [ ] args )
-    {
-        HashTable<String> H = new HashTable<>( );
+    public static void main( String [ ] args ) {
+        HashTable<Integer, String> H = new HashTable<>();
 
 
-        long startTime = System.currentTimeMillis( );
+        long startTime = System.currentTimeMillis();
 
         final int NUMS = 2000;
         final int GAP  =   37;
 
-        System.out.println( "Checking... " );
+        System.out.println("Checking... ");
 
 
         for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
-            H.insert( ""+i );
+            H.insert(i, ""+i );
         // Because GAP and NUMS are mutally prime, this inserts all numbers between 0 and 1999
         System.out.println( "H size is: " + H.size( ) );
         for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
-            if( H.insert( ""+i ) )
+            if( H.insert(i, ""+i ) )
                 System.out.println( "ERROR Find fails " + i );
         for( int i = 1; i < NUMS; i+= 2 )
-            H.remove( ""+i );
+            H.remove(i);
         for( int i = 1; i < NUMS; i+=2 )
         {
-            if( H.contains( ""+i ) )
+            if( H.contains(i))
                 System.out.println( "ERROR OOPS!!! " +  i  );
         }
-
-        long endTime = System.currentTimeMillis( );
-
+        long endTime = System.currentTimeMillis();
         System.out.println( "Elapsed time: " + (endTime - startTime) );
-        System.out.println( "H size is: " + H.size( ) );
-        System.out.println( "Array size is: " + H.capacity( ) );
+        System.out.println( "H size is: " + H.size());
+        System.out.println( "Array size is: " + H.capacity());
+        System.out.println(H.find(1000));
     }
 
 }
