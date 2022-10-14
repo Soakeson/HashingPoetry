@@ -15,7 +15,7 @@ public class WordFreqInfo {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Word :" + word+":");
-        sb.append(" (" + occurCt + ") : ");
+        sb.append("("+ occurCt + ") : ");
         for (Freq f : followList)
             sb.append(f.toString());
 
@@ -44,7 +44,7 @@ public class WordFreqInfo {
         }
 
         public String toString() {
-            return follow + " [" + followCt + "] ";
+            return follow + "[" + followCt + "] ";
         }
 
         public boolean equals(Freq f2) {

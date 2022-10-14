@@ -11,11 +11,11 @@
 
 
 /**
- * Probing table implementation of hash tables.
+ * Probing table implementation of hash tables. 
  * Note that all "matching" is based on the equals method.
  * @author Mark Allen Weiss
  */
-public class HashTable<K, V> {
+public class HashTable<K, V> {  //K is the type of the key and V is the type of the value associated with it
     /**
      * Construct the hash table.
      */
@@ -33,10 +33,11 @@ public class HashTable<K, V> {
     }
 
     /**
-     * Insert into the hash table. If the item is
-     * already present, do nothing.
-     * Implementation issue: This routine doesn't allow you to use a lazily deleted location.  Do you see why?
-     * @param x the item to insert.
+     * Insert a value associated with a key into the hash table.
+     * @param key the key that is able to lovate the value in the array.
+     * @param value the item being inserted into the array.
+     * @return boolean value, true if inserted, false if not.
+     * Can't insert duplicate values.
      */
     public boolean insert(K key, V value) {
         // Insert x as active
@@ -90,6 +91,12 @@ public class HashTable<K, V> {
                 insert(entry.key, entry.value);
     }
 
+    /**
+     * Method that performs quadratic probing resolution.
+     * @param key the key assigned to a value to search for.
+     * @return the position where the search terminates
+     * Allows for the return of a inactive value. Unlike findPos
+     */
     private int findInsert(K key) {
         int offset = 1;
         int currentPos = myhash(key);
@@ -107,7 +114,7 @@ public class HashTable<K, V> {
 
     /**
      * Method that performs quadratic probing resolution.
-     * @param x the item to search for.
+     * @param key the key of the value to search for.
      * @return the position where the search terminates.
      * Never returns an inactive location.
      */
@@ -127,7 +134,7 @@ public class HashTable<K, V> {
 
     /**
      * Remove from the hash table.
-     * @param x the item to remove.
+     * @param key the key of the value to remove.
      * @return true if item removed
      */
     public boolean remove(K key) {
@@ -158,8 +165,8 @@ public class HashTable<K, V> {
 
     /**
      * Find an item in the hash table.
-     * @param x the item to search for.
-     * @return true if item is found
+     * @param key the value to search for.
+     * @return true if key is found
      */
     public boolean contains(K key) {
         int currentPos = findPos(key);
@@ -168,8 +175,8 @@ public class HashTable<K, V> {
 
     /**
      * Find an item in the hash table.
-     * @param x the item to search for.
-     * @return the matching item.
+     * @param key of the valueto search for.
+     * @return the value that holds the same key.
      */
     public V find(K key) {
         int currentPos = findPos(key);
@@ -208,7 +215,7 @@ public class HashTable<K, V> {
 
     /**
      *
-      * @param x the Item to be hashed
+      * @param key the key to be hashed
      * @return the hashCode for the element
      * 
      */
@@ -222,9 +229,16 @@ public class HashTable<K, V> {
         return hashVal;
     }
 
+    public void printTable() {
+        for (int i=0; i < array.length; i++) {
+            if (array[i] != null)
+                System.out.println(i + " " + array[i].value);
+        }
+    }
+
     private static class HashEntry<K, V> {
-        public K key;
-        public V value;   // the element
+        public K key;   // the key
+        public V value;   // the value
         public boolean isActive;  // false if marked deleted
 
         public HashEntry(K key, V value) {
@@ -320,7 +334,6 @@ public class HashTable<K, V> {
         System.out.println( "Elapsed time: " + (endTime - startTime) );
         System.out.println( "H size is: " + H.size());
         System.out.println( "Array size is: " + H.capacity());
-        H.insert(1, "HELLO");
     }
 
 }
