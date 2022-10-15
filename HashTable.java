@@ -15,12 +15,12 @@
  * Note that all "matching" is based on the equals method.
  * @author Mark Allen Weiss
  */
-public class HashTable<K, V> {  //K is the type of the key and V is the type of the value associated with it
+public class HashTable<K,V> {  //K is the type of the key and V is the type of the value associated with it
     /**
      * Construct the hash table.
      */
     public HashTable() {
-        this( DEFAULT_TABLE_SIZE);
+        this(DEFAULT_TABLE_SIZE);
     }
 
     /**
@@ -46,7 +46,7 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
         if(isActive(currentPos))
             return false;
 
-        array[currentPos] = new HashEntry<K, V>(key, value, true);
+        array[currentPos] = new HashEntry<K,V>(key, value, true);
         currentActiveEntries++;
 
         // Rehash; see Section 5.5
@@ -78,7 +78,7 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
      */
     private void rehash()
     {
-        HashEntry<K, V> [] oldArray = array;
+        HashEntry<K,V> [] oldArray = array;
 
         // Create a new double-sized, empty table
         allocateArray(2 * oldArray.length);
@@ -86,7 +86,7 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
         currentActiveEntries = 0;
 
         // Copy table over
-        for(HashEntry<K, V> entry : oldArray)
+        for(HashEntry<K,V> entry : oldArray)
             if(entry != null && entry.isActive)
                 insert(entry.key, entry.value);
     }
@@ -236,7 +236,7 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
         }
     }
 
-    private static class HashEntry<K, V> {
+    private static class HashEntry<K,V> {
         public K key;   // the key
         public V value;   // the value
         public boolean isActive;  // false if marked deleted
@@ -254,7 +254,7 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
 
     private static final int DEFAULT_TABLE_SIZE = 101;
 
-    private HashEntry<K, V> [ ] array; // The array of elements
+    private HashEntry<K,V> [] array; // The array of elements
     private int occupiedCt;         // The number of occupied cells: active or deleted
     private int currentActiveEntries;                  // Current size
 
@@ -288,15 +288,15 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
      * @param n the number to test.
      * @return the result of the test.
      */
-    private static boolean isPrime( int n ) {
-        if( n == 2 || n == 3 )
+    private static boolean isPrime(int n) {
+        if(n == 2 || n == 3)
             return true;
 
-        if( n == 1 || n % 2 == 0 )
+        if(n == 1 || n % 2 == 0)
             return false;
 
-        for( int i = 3; i * i <= n; i += 2 )
-            if( n % i == 0 )
+        for(int i = 3; i * i <= n; i += 2)
+            if(n % i == 0)
                 return false;
 
         return true;
@@ -304,7 +304,7 @@ public class HashTable<K, V> {  //K is the type of the key and V is the type of 
 
 
     // Simple main
-    public static void main( String [ ] args ) {
+    public static void main(String [] args) {
         HashTable<Integer, String> H = new HashTable<>();
 
 
