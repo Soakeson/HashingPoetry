@@ -1,46 +1,43 @@
-import java.util.ArrayList;
 import java.util.Random;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Scanner;
+
 
 public class WritePoetry {
     public String WritePoem(String fileName, String seedWord, int wordCount, boolean printHash) {
         HashTable<String, WordFreqInfo> table = parseFile(fileName);
+        if (table.find(seedWord) == null) return "Seed Word not found."; 
         StringBuilder sb = new StringBuilder();
         if (printHash) table.printTable();
+        String previousWord = "";
         for (int i=0; i < wordCount; i++) {
-            if (seedWord != "?" && seedWord != "!" && seedWord != ".")
-                sb.append(seedWord + " ");
-            else 
-                sb.append(seedWord + "\n");
-            //******************************************************** DELETE ME **************************************
-            // System.out.println(seedWord + " " + table.find(seedWord));
-            //******************************************************* */
-            seedWord = nextWord(table.find(seedWord));
+            if (seedWord.contains("?") || seedWord.contains("!") || seedWord.contains(".")) {
+                seedWord = seedWord + "\n";
+            }
+            else if (!previousWord.contains("\n") && i != 0)
+                seedWord = " " + seedWord;
+            previousWord = seedWord;
+            sb.append(seedWord);
+            seedWord = nextWord(table.find(seedWord.strip()));
         }
         return sb.toString();
     }
 
     /**
-     * Parse a text file into an HashTable by entering each word as a WordFreqInfo to keep track of uses and following words. 
+     * Parse a text file into a HashTable by entering each word as a WordFreqInfo to keep track of uses and following words. 
      * @param fileName the name of the text file to be parsed
      * @return a HashTable<String, WordFreqInfo>
-     * @throws FileNotFoundException if the file is not found throws an exception
      */
     private HashTable<String, WordFreqInfo> parseFile(String fileName) {
         try {
             Path filePath = Path.of(fileName);
             String poem = Files.readString(filePath);
-            poem = poem.replaceAll("\\n|\\r", " ");
+            poem = poem.replaceAll("\\s+", " ");
             String[] wordArray = poem.split(" ");
             HashTable<String, WordFreqInfo> table = new HashTable<>();
             
-            for (int i=0; i < wordArray.length - 1; i++) {
-                String word = wordArray[i].toLowerCase();
+            for (int i=0; i < wordArray.length-1; i++) {
+                String word = wordArray[i].toLowerCase().strip();
                 WordFreqInfo info = table.find(word);
 
                 if (info != null && i < wordArray.length) { // If the word has already been entered update the word.
@@ -52,6 +49,7 @@ public class WritePoetry {
                 }
             }
             return table;
+
         } catch(Exception e) {
             System.out.println(e);
             System.exit(1);
@@ -59,6 +57,11 @@ public class WritePoetry {
         return null;
     }
 
+    /***
+     * Returns the next randomly selected word probabiticaly based on the amount of entries.
+     * @param wordInfo the current wordInfo to decide what word will be returned
+     * @return the next word wordInfo
+     */
     private String nextWord(WordFreqInfo wordInfo) {
         Random rand = new Random();
         int r = rand.nextInt(wordInfo.occurCt);
