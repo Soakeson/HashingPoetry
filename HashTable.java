@@ -234,6 +234,7 @@ public class HashTable<K,V> {  //K is the type of the key and V is the type of t
             if (array[i] != null)
                 System.out.println(i + " " + array[i].value);
         }
+        System.out.println();
     }
 
     private static class HashEntry<K,V> {

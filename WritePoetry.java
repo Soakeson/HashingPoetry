@@ -4,6 +4,14 @@ import java.nio.file.Path;
 
 
 public class WritePoetry {
+    /**
+     * Generates a poem from text read in a text file.
+     * @param fileName the path to the text file to be used to generate the poem.
+     * @param seedWord the beginning word of the poem to generate from.
+     * @param wordCount the amount of words generated in the poe including punctuation.
+     * @param printHash print the has table that was generated or not.
+     * @return a formated string poem.
+     */
     public String WritePoem(String fileName, String seedWord, int wordCount, boolean printHash) {
         HashTable<String, WordFreqInfo> table = parseFile(fileName);
         if (table.find(seedWord) == null) return "Seed Word not found."; 
@@ -14,7 +22,7 @@ public class WritePoetry {
             if (seedWord.contains("?") || seedWord.contains("!") || seedWord.contains(".")) {
                 seedWord = seedWord + "\n";
             }
-            else if (!previousWord.contains("\n") && i != 0)
+            else if (!seedWord.contains(",") && !previousWord.contains("\n") && i != 0)
                 seedWord = " " + seedWord;
             previousWord = seedWord;
             sb.append(seedWord);
